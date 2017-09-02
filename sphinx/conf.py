@@ -184,6 +184,3 @@ texinfo_documents = [
      author, 'everest3', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
