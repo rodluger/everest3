@@ -6,8 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
 SPHINXPROJ    = planetplanet
 SOURCEDIR     = .
-BUILDDIR      = ../
-PICKLEDIR     = .doctrees
+BUILDDIR      = .build/
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -17,11 +16,11 @@ help:
 
 # Override make clean so we don't delete the entire repo!
 clean:
-	@rm -rf .doctrees
+	@rm -rf .build/doctrees
 	@rm -rf ../docs/*
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O) -d "$(PICKLEDIR)"
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	@touch ../docs/.nojekyll

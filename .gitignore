@@ -1,6 +1,6 @@
 # Custom
 *.DS_Store
-sphinx/.doctrees
+sphinx/.build/doctrees
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
