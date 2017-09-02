@@ -15,6 +15,11 @@ help:
 
 .PHONY: help Makefile
 
+# Override make clean so we don't delete the entire repo!
+clean:
+	@rm -rf .doctrees
+	@rm -rf ../docs/*
+
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
