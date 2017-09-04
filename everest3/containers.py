@@ -254,7 +254,7 @@ class Lightcurve(object):
         self._detrended = DetrendedTimeSeries()
     
     @property
-    def raw(self)
+    def raw(self):
         '''
         
         '''
@@ -262,7 +262,7 @@ class Lightcurve(object):
         return self._raw
 
     @property
-    def detrended(self)
+    def detrended(self):
         '''
         
         '''
