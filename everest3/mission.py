@@ -27,7 +27,7 @@ class Mission(object):
     @property
     def name(self):
         '''
-        The mission name.
+        A string corresponding to the mission name.
         
         '''
         
