@@ -1,4 +1,5 @@
 # everest3
+[![Build Status](https://travis-ci.org/rodluger/everest3.svg?branch=master)](https://travis-ci.org/rodluger/everest3)
 
 Hi team, 
 
