@@ -28,7 +28,7 @@ EVEREST_DATA_DIR = os.path.expanduser(os.environ.get("EVEREST3_DATA_DIR", os.pat
 if not os.path.exists(EVEREST_DATA_DIR):
     os.mkdir(EVEREST_DATA_DIR)
 
-#: The :py:mod:`everest` source code directory
+#: The :py:mod:`everest3` source code directory
 EVEREST_SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 
 #: Kepler/K2 long cadence in seconds

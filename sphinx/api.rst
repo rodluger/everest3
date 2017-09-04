@@ -9,5 +9,4 @@ Detailed documentation of the Python code.
    constants.py <constants>
    containers.py <containers>
    k2.py <k2>
-   mission.py <mission>
    pld.py <pld>

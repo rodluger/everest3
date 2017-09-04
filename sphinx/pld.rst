@@ -1,2 +1,3 @@
 .. automodule:: everest3.pld
-   :members:
+   :show-inheritance:
+   :inherited-members:

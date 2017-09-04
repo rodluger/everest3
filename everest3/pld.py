@@ -4,7 +4,7 @@
 pld.py
 ------
 
-The :py:mod:`everest` core PLD de-trending functions.
+The :py:mod:`everest3` core PLD de-trending functions.
 
 '''
 

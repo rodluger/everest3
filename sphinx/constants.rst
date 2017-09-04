@@ -1,2 +1,3 @@
 .. automodule:: everest3.constants
-   :members:
+   :show-inheritance:
+   :inherited-members:

@@ -4,7 +4,7 @@
 k2.py
 -----
 
-Routines for de-trending `K2` light curves with :py:obj:`everest`.
+Routines for de-trending `K2` light curves with :py:obj:`everest3`.
 
 '''
 
@@ -16,7 +16,7 @@ import os
 import logging
 log = logging.getLogger(__name__)
 
-__all__ = ['path', 'name', 'download', 'scatter', 'Target']
+__all__ = ['path', 'name', 'Target']
 
 #: The mission data directory
 path = os.path.join(EVEREST_DATA_DIR, 'k2')
@@ -35,7 +35,7 @@ mag_str = 'Kp'
 class Target(containers.Target):
     '''
     A class that stores all the information, data, attributes, etc. for a `K2`
-    target de-trended with :py:obj:`everest`.
+    target de-trended with :py:obj:`everest3`.
     
     '''
     

@@ -1,2 +1,3 @@
 .. automodule:: everest3.containers
-   :members:
+   :show-inheritance:
+   :inherited-members:

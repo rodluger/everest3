@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
-target.py
----------
+containers.py
+-------------
 
 Defines classes to store information about targets and their light curves.
 
@@ -16,9 +16,20 @@ import numpy as np
 import logging
 log = logging.getLogger(__name__)
 
+__all__ = ['DetrendedTimeSeries',
+           'RawTimeSeries',
+           'Lightcurve',
+           'Target' ]
+
 class DetrendedTimeSeries(object):
     '''
     A data container for a detrended timeseries of fluxes and flux errors.
+    
+    :param raw: A raw time series container.
+    :type raw: :py:class:`RawTimeSeries`
+    :param array_like model: The array corresponding to the linear model.
+    :param array_like errors: The array of errors on the model, which will \
+           be added in quadrature to the raw errors.
     
     '''
     
@@ -28,16 +39,14 @@ class DetrendedTimeSeries(object):
         '''
         
         # Store the arrays
-        self._time = raw.time
-        self._fraw = raw.flux
         if model is not None:
             self._model = model
         else:
-            self._model = np.zeros_like(self._time)
+            self._model = np.zeros_like(self._raw.time)
         if errors is not None:
-            self._errors = errors
+            self._model_errors = errors
         else:
-            self._errors = raw.errors
+            self._model_errors = np.zeros_like(self._raw.errors)
     
     @property
     def time(self):
@@ -46,7 +55,7 @@ class DetrendedTimeSeries(object):
         
         '''
         
-        return self._time
+        return self._raw.time
 
     @property
     def model(self):
@@ -64,7 +73,7 @@ class DetrendedTimeSeries(object):
         
         '''
         
-        return self._fraw - self._model   
+        return self._raw.flux - self._model   
     
     @property
     def errors(self):
@@ -73,12 +82,12 @@ class DetrendedTimeSeries(object):
         
         '''
         
-        return self._errors
+        return np.sqrt(self._raw.errors ** 2 + self._model_errors ** 2)
         
 class RawTimeSeries(object):
     '''
-    A data container for a raw timeseries of fluxes and flux errors defined
-    on a two-dimensional postage stamp.
+    A **static** data container for a raw timeseries of fluxes and flux errors 
+    defined on a two-dimensional postage stamp.
     
     :param array_like time: The array of times for each of the \
            observations.
@@ -156,7 +165,7 @@ class RawTimeSeries(object):
     @property
     def flux2D(self):
         '''
-        The flattened pixel timeseries _within the aperture_. This
+        The flattened pixel timeseries *within the aperture*. This
         is a 2D array with dimensions `(npix, ncads)`.
         
         '''
@@ -186,7 +195,7 @@ class RawTimeSeries(object):
     @property
     def errors2D(self):
         '''
-        The flattened pixel errors timeseries _within the aperture_. This
+        The flattened pixel errors timeseries *within the aperture*. This
         is a 2D array with dimensions `(npix, ncads)`.
         
         '''
@@ -243,27 +252,42 @@ class Lightcurve(object):
     '''
     A container for a generic light curve dataset.
     
+    :param raw: A raw time series container.
+    :type raw: :py:obj:`RawTimeSeries`
+    :param detrended: A de-trended time series container.
+    :type detrended: :py:obj:`DetrendedTimeSeries`
+    
     '''
     
-    def __init__(self):
+    def __init__(self, raw, detrended = None):
         '''
         
         '''
         
-        self._raw = RawTimeSeries()
-        self._detrended = DetrendedTimeSeries()
+        self._raw = raw
+        if detrended is not None:
+            self._detrended = detrended
+        else:
+            self._detrended = DetrendedTimeSeries(self._raw)
     
     @property
     def raw(self):
         '''
+        The raw light curve container.
         
         '''
         
         return self._raw
-
+    
+    @raw.setter
+    def raw(self, val):
+        self._raw = val
+        self._detrended._raw = val
+    
     @property
     def detrended(self):
         '''
+        The de-trended light curve container.
         
         '''
         
@@ -272,7 +296,7 @@ class Lightcurve(object):
 class Target(object):
     '''
     A class that stores all the information, data, attributes, etc. for a star
-    de-trended with :py:obj:`everest`.
+    de-trended with :py:obj:`everest3`.
     
     '''
     
@@ -378,7 +402,7 @@ class Target(object):
     
     def detrend(self, *args, **kwargs):
         '''
-        De-trend the light curve via :py:func:`everest.pld.detrend()`.
+        De-trend the light curve via :py:func:`everest3.pld.detrend()`.
         
         '''
         
