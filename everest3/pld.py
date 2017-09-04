@@ -8,18 +8,14 @@ The :py:mod:`everest` core PLD de-trending functions.
 
 '''
 
-from __future__ import division, print_function, absolute_import, unicode_literals
+from __future__ import division, print_function, absolute_import, \
+                       unicode_literals
+import logging
+log = logging.getLogger(__name__)
 
-class PLD(object):
-    '''
-    The main PLD de-trending class.
-    
+def detrend(*args, **kwargs):
     '''
     
-    def __init__(self):
-        '''
-        
-        '''
-        
-        pass
-        
+    '''
+    
+    raise NotImplementedError("Not yet implemented.")

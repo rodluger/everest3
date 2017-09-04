@@ -13,6 +13,11 @@ except NameError:
   __EVEREST3_SETUP__ = False
 
 if not __EVEREST3_SETUP__:
-
+    
+    # Main modules
+    from . import constants
     from . import pld
-    from . import mission
+    from . import target
+    
+    # Mission modules
+    from . import k2
