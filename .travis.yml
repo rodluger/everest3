@@ -1,36 +1,34 @@
-# Adapted from dfm/george
-
 language: python
 
 matrix:
-  include:
-    # All the versions of Python.
-    - python: 2.7
-    - python: 3.4
-
+    include:
+        - python: 2.7
+        - python: 3.4
+        
 git:
-    submodules: true
-
-before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda2/bin:$PATH
-  - conda update --yes conda
+  submodules: true
   
+before_install:
+    - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+    - chmod +x miniconda.sh
+    - ./miniconda.sh -b
+    - export PATH=/home/travis/miniconda2/bin:$PATH
+    - conda update --yes conda
+    
 install:
-  - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
-  - source activate test
-  - conda install --yes numpy scipy matplotlib nose numba
-  - python setup.py develop
-
-# Configure a headless display to test plot generation
-# http://stackoverflow.com/a/35403128
-before_script: 
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  # Give xvfb some time to start
-  - sleep 3 
-
-script: 
-  - nosetests --with-coverage --cover-package=everest3 -v -w tests
+    - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
+    - source activate test
+    - conda install --yes numpy scipy matplotlib nose numba
+    - python setup.py develop
+    
+before_script:
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
+    - sleep 3
+    
+script:
+    - nosetests --with-coverage --cover-package=everest3 -v -w tests
+    
+env:
+    global:
+        secure: Vbump0ZjmpwBNt+cjlM5S5bgqlGsSeJsNgRXjUScMXcE544tUud8KvykFAKRBvwTNzH7JS/CmhwGYcbxgAWp/1+TGXo8W37qBnMrNP3hJ6v0upTrBBoG6rtS7fBSTcUHNTBrMxfkMgpww4fTn85w0Tq7GngTXDtqOgWLFS10JWPn+QoFBJSqTHVREYqmZ0aYwyOHxMxPUgWKJPUMW97ayYpIy+36LLyBC/YNaKf7VNg3kJIPg4L4Dn3cXbtTiO0jcsbIFEcJN5DydtNzQj4wsOVh0PcXQWR9fHpfsGtp5mvwKlJP7YC2Sr5M3L04RmbFkKMKDoyiUqI9mMbel2OdbIvQJfu8wTX5labgMyrBKWAgKlGFohLGR7LWQeqRMzoJGzBXxRz7I339C3wa+RlYuJXUXT6wUqF0zVxIf4SzbfRCO4Zc9fBwNP/a6GXTEEBkd++cCHZaY/Ga4S3LRxNeMnX0weq9Wixj57IE0jyEST/3mJTbJOJY/geYRDdC68s3uXv9Z+o6hKPENOBAjY+mU3uRQANAVnQHXG++kl0J9hHD9hTK2pniFzoWgiAPmxNGv9UXa1qscia+expH2/y6o/qgZy5EDZ0Se0sGomJKYcPIV2BTCRF+t0qSSUkr8fNBLFp4/p2Z4IsaFi9nCAB3nTD6j8x+bBqBC6+LiH80ax8=
