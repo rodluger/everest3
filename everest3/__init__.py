@@ -16,8 +16,8 @@ if not __EVEREST3_SETUP__:
     
     # Main modules
     from . import constants
+    from . import containers
     from . import pld
-    from . import target
     
     # Mission modules
     from . import k2

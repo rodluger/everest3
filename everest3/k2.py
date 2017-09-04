@@ -10,7 +10,7 @@ Routines for de-trending `K2` light curves with :py:obj:`everest`.
 
 from __future__ import division, print_function, absolute_import, \
                        unicode_literals
-from . import target
+from . import containers
 from .constants import *
 import os
 import logging
@@ -26,7 +26,13 @@ if not os.path.exists(path):
 #: The mission name
 name = 'K2'
 
-class Target(target.Target):
+#: The time unit for the mission
+time_unit = 'BJD - 2454833'
+
+#: The magnitude string for the mission
+mag_str = 'Kp'
+
+class Target(containers.Target):
     '''
     A class that stores all the information, data, attributes, etc. for a `K2`
     target de-trended with :py:obj:`everest`.
