@@ -36,7 +36,7 @@ script:
     - make html -C sphinx
     
 after_success:
-    - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash deploy.sh
+    - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash sphinx/deploy.sh
 
 env:
     global:

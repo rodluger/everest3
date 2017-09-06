@@ -30,9 +30,11 @@ mv sphinx/.build/html ../
 
 # Delete everything in repo
 git rm -rf .
+rm -rf .
 
 # Move html stuff back in and add it
 mv ../html/* .
+touch .nojekyll
 git add -f .
 
 # Commit and force push!
