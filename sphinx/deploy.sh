@@ -29,13 +29,13 @@ git checkout --orphan gh-pages
 mv sphinx/.build/html ../
 
 # Delete everything in repo
-git rm -rf .
-rm -rf .
+git rm -rf *
+rm -rf *
 
 # Move html stuff back in and add it
 mv ../html/* .
 touch .nojekyll
-git add -f .
+git add -f *
 
 # Commit and force push!
 git -c user.name='travis' -c user.email='travis' commit -m "rebuild gh-pages at ${rev}"
