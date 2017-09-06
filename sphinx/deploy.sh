@@ -30,7 +30,7 @@ mv sphinx/.build/html ../
 
 # Delete everything in repo
 git clean -f -d
-git rm -r .
+git rm -rf .
 
 # Move html stuff back in and add it
 mv ../html/* .
