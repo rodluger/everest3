@@ -1,6 +1,8 @@
 #!/bin/bash
 # Automatically update documentation on gh-pages branch with Travis. Based on
 # http://www.steveklabnik.com/automatically_update_github_pages_with_travis_example/
+# and
+# https://github.com/dfm/imprs/blob/master/.travis.yml#L50
 
 # Exit on errors
 set -o errexit -o nounset
@@ -19,20 +21,20 @@ echo "Building docs..."
 # Get git hash
 rev=$(git rev-parse --short HEAD)
 
-# Create *new* git repo in html folder
-cd sphinx/.build/html/
-git init
-git config user.name "Rodrigo Luger"
-git config user.email "rodluger@gmail.com"
+# Create orphan repo (DFM's hack)
+cd $TRAVIS_BUILD_DIR
+git checkout --orphan gh-pages
 
-# We will push to gh-pages
-git remote add upstream "https://$GH_TOKEN@github.com/rodluger/everest3.git"
-git fetch upstream && git reset upstream/gh-pages
+# Move html to dir above repo
+mv sphinx/.build/html ../
 
-# Refresh all files
-touch .
+# Delete everything in repo
+git rm -rf .
 
-# Commit and push!
-git add -A .
-git commit -m "rebuild pages at ${rev}"
-git push -q upstream HEAD:gh-pages
+# Move html stuff back in and add it
+mv ../html/* .
+git add -f .
+
+# Commit and force push!
+git -c user.name='travis' -c user.email='travis' commit -m "rebuild gh-pages at ${rev}"
+git push -q -f https://$GH_TOKEN@github.com/$TRAVIS_REPO_SLUG gh-pages
