@@ -29,8 +29,8 @@ git checkout --orphan gh-pages
 mv sphinx/.build/html ../
 
 # Delete everything in repo
-git rm -rf *
-rm -rf *
+git clean -f -d
+git rm -r *
 
 # Move html stuff back in and add it
 mv ../html/* .
