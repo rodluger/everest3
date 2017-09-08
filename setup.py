@@ -41,7 +41,8 @@ setup(name = 'everest3',
                           'numpy>=1.8',
                           'scipy',
                           'matplotlib',
-                          'six'
+                          'six',
+                          'kplr'
                          ],
       include_package_data = True,
       zip_safe = False,

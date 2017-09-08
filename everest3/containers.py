@@ -168,7 +168,7 @@ class TimeSeries(object):
                dimensions `(ncols, nrows)` with 1's corresponding  to pixels \
                included in the aperture and 0's to pixels outside the aperture.
         
-        :returns: An 1D SAP flux array of shape `(ncads)`
+        :returns: A 1D SAP flux array of shape `(ncads)`
         
         '''
         
@@ -183,7 +183,7 @@ class TimeSeries(object):
                dimensions `(ncols, nrows)` with 1's corresponding  to pixels \
                included in the aperture and 0's to pixels outside the aperture.
         
-        :returns: An 1D SAP flux errors array of shape `(ncads)`
+        :returns: A 1D SAP flux errors array of shape `(ncads)`
         
         '''
         
