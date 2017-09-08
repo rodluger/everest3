@@ -27,12 +27,17 @@ except ImportError:
 import logging
 log = logging.getLogger(__name__)
 
-__all__ = ['path', 'name', 'Target']
+__all__ = ['path', 'name', 'time_unit', 'mag_str', 'Target']
 
-#: :py:obj:`kplr` hack. The current version of the package doesn't
-#: support campaigns above 0 because of this function, so let's replace it.
 @property
-def url(self):
+def _url(self):
+    '''
+    This is a :py:obj:`kplr` hack. The current version of the package (0.2.2) 
+    doesn't support campaigns above 0 because of this function, so let's 
+    replace it.
+
+    '''
+    
     base_url = "http://archive.stsci.edu/pub/k2/"
     if self.ktc_k2_id < 201000000:
         base_url += "{0}/c%d/200000000/{1:05d}/{2}" % self.sci_campaign
@@ -42,12 +47,12 @@ def url(self):
     return base_url.format(self.product,
                            int(int(int(self.kepid[-5:][-5:])*1e-3)*1e3),
                            self._filename)
-kplr.api.K2TargetPixelFile.url = url
+kplr.api.K2TargetPixelFile.url = _url
 
 #: The mission data directory
 path = os.path.join(EVEREST_DATA_DIR, 'k2')
 if not os.path.exists(path):
-    os.mkdir(path)
+    os.makedirs(path)
 
 #: The mission name
 name = 'K2'
@@ -58,7 +63,7 @@ time_unit = 'BJD - 2454833'
 #: The magnitude string for the mission
 mag_str = 'Kp'
 
-class NoWarnings():
+class _NoWarnings():
     '''
     A context manager to temporarily disable all logging
     warnings. Useful for overriding :py:obj:`kplr` warnings.
@@ -113,7 +118,7 @@ class Target(containers.Target):
         
         # Do we need to figure out the campaign number for this target?
         if self._season is None:
-            with NoWarnings():
+            with _NoWarnings():
                 star = client.k2_star(self.ID)
                 tpfs = star.get_target_pixel_files(fetch = False)
                 self._season = tpfs[0].sci_campaign
@@ -154,7 +159,7 @@ class Target(containers.Target):
         # Download the file if necessary
         if (self.clobber_raw) or (not os.path.exists(tpf)):
             log.info('Downloading raw data...')
-            with NoWarnings():
+            with _NoWarnings():
                 star = client.k2_star(self.ID)
                 tpfs = star.get_target_pixel_files(fetch = True)
         

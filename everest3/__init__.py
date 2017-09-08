@@ -17,6 +17,7 @@ if not __EVEREST3_SETUP__:
     # Main modules
     from . import constants
     from . import containers
+    from . import dvs
     from . import pld
     from . import utils
     
