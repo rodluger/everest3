@@ -16,122 +16,38 @@ import numpy as np
 import logging
 log = logging.getLogger(__name__)
 
-__all__ = ['DetrendedTimeSeries',
-           'RawTimeSeries',
-           'Lightcurve',
-           'Target' ]
+__all__ = [ 'TimeSeries',
+            'Target' ]
 
-class DetrendedTimeSeries(object):
+class TimeSeries(object):
     '''
-    A data container for a detrended timeseries of fluxes and flux errors.
-    
-    :param raw: A raw time series container.
-    :type raw: :py:class:`RawTimeSeries`
-    :param array_like model: The array corresponding to the linear model.
-    :param array_like errors: The array of errors on the model, which will \
-           be added in quadrature to the raw errors.
+    A data container for a generic photometric timeseries defined on a postage
+    stamp.
     
     '''
     
-    def __init__(self, raw, model = None, errors = None):
+    def __init__(self, time = np.empty((0,), dtype = 'float64'), 
+                 flux = np.empty((0,0,0,), dtype = 'float64'), 
+                 error = None):
         '''
         
         '''
         
         # Store the arrays
-        if model is not None:
-            self._model = model
+        self.time = time
+        self.flux = flux
+        if error is not None:
+            self.error = error
         else:
-            self._model = np.zeros_like(self._raw.time)
-        if errors is not None:
-            self._model_errors = errors
-        else:
-            self._model_errors = np.zeros_like(self._raw.errors)
+            self.error = np.zeros_like(self.flux)
     
-    @property
-    def time(self):
+    def __repr__(self):
         '''
-        The time array.
         
         '''
         
-        return self._raw.time
-
-    @property
-    def model(self):
-        '''
-        The linear de-trending model.
-        
-        '''
-        
-        return self._model
- 
-    @property
-    def flux(self):
-        '''
-        The de-trended flux array.
-        
-        '''
-        
-        return self._raw.flux - self._model   
+        return "<Timeseries of %d fluxes on a %d x %d pixel postage stamp>" % (self.ncads, self.ncols, self.nrows)
     
-    @property
-    def errors(self):
-        '''
-        The de-trended flux errors array.
-        
-        '''
-        
-        return np.sqrt(self._raw.errors ** 2 + self._model_errors ** 2)
-        
-class RawTimeSeries(object):
-    '''
-    A **static** data container for a raw timeseries of fluxes and flux errors 
-    defined on a two-dimensional postage stamp.
-    
-    :param array_like time: The array of times for each of the \
-           observations.
-    :param array_like flux3D: The raw 3D pixel postage stamps across \
-           the timeseries. This is an array with dimensions \
-           `(ncols, nrows, ncads)`.
-    :param array_like errors3D: The raw 3D pixel postage stamp errors \
-           across the timeseries. This is an array with dimensions \
-           `(ncols, nrows, ncads)`.
-    :param array_like aperture: A 2D binary array of shape 
-           `(ncols, nrows)` with 1's corresponding  to pixels included \
-           in the aperture and 0's to pixels outside the aperture.
-    
-    '''
-    
-    def __init__(self, time, aperture, flux3D, errors3D = None):
-        '''
-        
-        '''
-        
-        # Store the arrays
-        self._time = time
-        self._aperture = aperture
-        self._flux3D = flux3D
-        if errors3D is not None:
-            self._errors3D = errors3D
-        else:
-            self._errors3D = np.zeros_like(self._flux3D)
-        
-        # Compute simple properties
-        self._npix = np.count_nonzero(self._aperture)
-        self._ncols = self._flux3D.shape[0]
-        self._nrows = self._flux3D.shape[1]
-        self._ncads = self._flux3D.shape[2]
-        
-        # Indices within aperture
-        ap = np.where(self._aperture & 1)
-        
-        # Compute the collapsed fluxes and errors
-        self._flux2D = np.array([p[ap] for p in self._flux3D]) 
-        self._flux = np.sum(self._flux2D, axis = 0)  
-        self._errors2D = np.array([p[ap] for p in self._errors3D]) 
-        self._errors = np.sqrt(np.sum(self._errors2D ** 2, axis = 0)) 
-        
     @property
     def time(self):
         '''
@@ -141,103 +57,37 @@ class RawTimeSeries(object):
         
         return self._time
     
-    @property
-    def aperture(self):
-        '''
-        A 2D binary array of shape `(ncols, nrows)` with 1's corresponding 
-        to pixels included in the aperture and 0's to pixels outside the
-        aperture.
-        
-        '''
-        
-        return self._aperture
-    
-    @property
-    def flux3D(self):
-        '''
-        The raw 3D pixel postage stamps across the timeseries.
-        This is an array with dimensions `(ncols, nrows, ncads)`.
-        
-        '''
-        
-        return self._flux3D
-
-    @property
-    def flux2D(self):
-        '''
-        The flattened pixel timeseries *within the aperture*. This
-        is a 2D array with dimensions `(npix, ncads)`.
-        
-        '''
-        
-        return self._flux2D
+    @time.setter
+    def time(self, val):
+        self._time = val
     
     @property
     def flux(self):
         '''
-        The SAP flux array, obtained by summing the fluxes in each of the
-        pixels in the aperture at each cadence.
+        The flux array, shape `(ncads, ncols, nrows)`.
         
         '''
         
-        return self._flux
+        return self._flux  
 
-    @property
-    def errors3D(self):
-        '''
-        The raw 3D pixel postage stamp errors across the timeseries.
-        This is an array with dimensions `(ncols, nrows, ncads)`.
-        
-        '''
-        
-        return self._errors3D
-
-    @property
-    def errors2D(self):
-        '''
-        The flattened pixel errors timeseries *within the aperture*. This
-        is a 2D array with dimensions `(npix, ncads)`.
-        
-        '''
-        
-        return self._errors2D
+    @flux.setter
+    def flux(self, val):
+        assert len(val.shape) == 3, "Parameter `flux` must have shape `(ncads, ncols, nrows)`."
+        self._flux = val
     
     @property
-    def errors(self):
+    def error(self):
         '''
-        The SAP flux array, obtained by summing the errors in quadrature
-        for each of the pixels in the aperture at each cadence.
-        
-        '''
-        
-        return self._errors
-        
-    @property
-    def ncads(self):
-        '''
-        The number of cadences in the timeseries.
+        The flux errors array shape `(ncads, ncols, nrows)`.
         
         '''
         
-        return self._ncads
+        return self._error
 
-    @property
-    def npix(self):
-        '''
-        The number of pixels within the aperture.
-        
-        '''
-        
-        return self._npix
-    
-    @property
-    def nrows(self):
-        '''
-        The number of rows in the postage stamp.
-        
-        '''
-        
-        return self._nrows
+    @error.setter
+    def error(self, val):
+        assert len(val.shape) == 3, "Parameter `error` must have shape `(ncads, ncols, nrows)`."
+        self._error = val
 
     @property
     def ncols(self):
@@ -246,53 +96,100 @@ class RawTimeSeries(object):
         
         '''
         
-        return self._ncols
-        
-class Lightcurve(object):
-    '''
-    A container for a generic light curve dataset.
-    
-    :param raw: A raw time series container.
-    :type raw: :py:obj:`RawTimeSeries`
-    :param detrended: A de-trended time series container.
-    :type detrended: :py:obj:`DetrendedTimeSeries`
-    
-    '''
-    
-    def __init__(self, raw, detrended = None):
-        '''
-        
-        '''
-        
-        self._raw = raw
-        if detrended is not None:
-            self._detrended = detrended
-        else:
-            self._detrended = DetrendedTimeSeries(self._raw)
+        return self._flux.shape[1]
     
     @property
-    def raw(self):
+    def nrows(self):
         '''
-        The raw light curve container.
+        The number of rows in the postage stamp.
         
         '''
         
-        return self._raw
-    
-    @raw.setter
-    def raw(self, val):
-        self._raw = val
-        self._detrended._raw = val
-    
+        return self._flux.shape[2]
+
     @property
-    def detrended(self):
+    def ncads(self):
         '''
-        The de-trended light curve container.
+        The number of columns in the postage stamp.
         
         '''
         
-        return self._detrended
+        return self._flux.shape[0]
     
+    def pixel_flux(self, aperture = None):
+        '''
+        The array of pixel fluxes within an aperture.
+        
+        :param ndarray aperture: A 2D :py:obj:`numpy` array of integers of \
+               dimensions `(ncols, nrows)` with 1's corresponding  to pixels \
+               included in the aperture and 0's to pixels outside the aperture.
+        
+        :returns: A 2D pixel flux array of shape `(ncads, npix)`
+        
+        '''
+        
+        # If no aperture, assume it's entire postage stamp
+        if aperture is None:
+            aperture = np.ones((self.ncols, self.nrows), dtype = 'int32')
+        
+        # Get the indices
+        ap = np.where(aperture & 1)
+        
+        # Collapse the flux array
+        return np.array([p[ap] for p in self.flux])
+
+    def pixel_error(self, aperture = None):
+        '''
+        The array of pixel flux errors within an aperture.
+        
+        :param ndarray aperture: A 2D :py:obj:`numpy` array of integers of \
+               dimensions `(ncols, nrows)` with 1's corresponding  to pixels \
+               included in the aperture and 0's to pixels outside the aperture.
+        
+        :returns: A 2D pixel flux errors array of shape `(ncads, npix)`
+        
+        '''
+        
+        # If no aperture, assume it's entire postage stamp
+        if aperture is None:
+            aperture = np.ones((self.ncols, self.nrows), dtype = 'int32')
+        
+        # Get the indices
+        ap = np.where(aperture & 1)
+        
+        # Collapse the flux array
+        return np.array([p[ap] for p in self.error])
+   
+    def sap_flux(self, aperture = None):
+        '''
+        The simple aperture photometry flux.
+        
+        :param ndarray aperture: A 2D :py:obj:`numpy` array of integers of \
+               dimensions `(ncols, nrows)` with 1's corresponding  to pixels \
+               included in the aperture and 0's to pixels outside the aperture.
+        
+        :returns: An 1D SAP flux array of shape `(ncads)`
+        
+        '''
+        
+        # Sum the pixels
+        return np.nansum(self.pixel_flux(aperture), axis = 0)
+
+    def sap_error(self, aperture = None):
+        '''
+        The simple aperture photometry flux errors.
+        
+        :param ndarray aperture: A 2D :py:obj:`numpy` array of integers of \
+               dimensions `(ncols, nrows)` with 1's corresponding  to pixels \
+               included in the aperture and 0's to pixels outside the aperture.
+        
+        :returns: An 1D SAP flux errors array of shape `(ncads)`
+        
+        '''
+        
+        # Sum the errors in quadrature
+        return np.sqrt(np.nansum(self.pixel_error(aperture) ** 2, axis = 0))      
+
 class Target(object):
     '''
     A class that stores all the information, data, attributes, etc. for a star
@@ -301,7 +198,7 @@ class Target(object):
     '''
     
     def __init__(self, ID, season = None, mag = None, 
-                 cadence = KEPLER_LONG_CADENCE):
+                 cadence = KEPLER_LONG_CADENCE, lightcurve = None):
         '''
         
         '''
@@ -310,7 +207,17 @@ class Target(object):
         self.season = season
         self.mag = mag
         self.cadence = cadence
-        self.lc = Lightcurve()
+        if lightcurve is not None:
+            self.lightcurve = lightcurve
+        else:
+            self.lightcurve = TimeSeries()
+    
+    def __repr__(self):
+        '''
+        
+        '''
+        
+        return "<%s Target: %s>" % (self.mission, self.ID)
     
     # ------------------
     # Generic properties
@@ -386,7 +293,7 @@ class Target(object):
     @property
     def lightcurve(self):
         '''
-        A :py:class:`Lightcurve` object containing the dataset for this target.
+        A :py:class:`TimeSeries` object containing the dataset for this target.
         
         '''
         
