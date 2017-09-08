@@ -15,8 +15,8 @@ from .constants import *
 import os
 import numpy as np
 import kplr
-from kplr.config import KPLR_ROOT
 client = kplr.API()
+from kplr.config import KPLR_ROOT
 try:
     import pyfits
 except ImportError:
@@ -28,6 +28,21 @@ import logging
 log = logging.getLogger(__name__)
 
 __all__ = ['path', 'name', 'Target']
+
+#: :py:obj:`kplr` hack. The current version of the package doesn't
+#: support campaigns above 0 because of this function, so let's replace it.
+@property
+def url(self):
+    base_url = "http://archive.stsci.edu/pub/k2/"
+    if self.ktc_k2_id < 201000000:
+        base_url += "{0}/c%d/200000000/{1:05d}/{2}" % self.sci_campaign
+    else:
+        base_url += ("{{0}}/c%d/{0}/{{1:05d}}/{{2}}" % self.sci_campaign) \
+            .format(int(int(self.ktc_k2_id * 1e-5) * 1e5))
+    return base_url.format(self.product,
+                           int(int(int(self.kepid[-5:][-5:])*1e-3)*1e3),
+                           self._filename)
+kplr.api.K2TargetPixelFile.url = url
 
 #: The mission data directory
 path = os.path.join(EVEREST_DATA_DIR, 'k2')
