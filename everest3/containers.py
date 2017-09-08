@@ -185,7 +185,7 @@ class TimeSeries(object):
         '''
         
         # Sum the pixels
-        return np.nansum(self.pixel_flux(aperture), axis = 0)
+        return np.nansum(self.pixel_flux(aperture), axis = 1)
 
     def sap_error(self, aperture = None):
         '''
@@ -200,7 +200,7 @@ class TimeSeries(object):
         '''
         
         # Sum the errors in quadrature
-        return np.sqrt(np.nansum(self.pixel_error(aperture) ** 2, axis = 0))      
+        return np.sqrt(np.nansum(self.pixel_error(aperture) ** 2, axis = 1))      
     
     def scatter(self, *args, **kwargs):
         '''
@@ -229,11 +229,17 @@ class Target(object):
         self.mag = mag
         self.cadence = cadence
         
-        # Initialize
+        # Initialize logging
         InitializeLogging(self.logfile, quiet = quiet)
         log.info('Initializing everest3...')
+        
+        # Download the raw data
         self.get_raw_data()
+        
+        # Get the aperture
         self.get_aperture()
+        
+        # Initialize the linear model
         self.model = np.zeros_like(self.time)
         
     def __repr__(self):
@@ -327,7 +333,25 @@ class Target(object):
         '''
     
         return os.path.join(self.path, '%s.log' % self.ID)
+    
+    @property
+    def dvsfile(self):
+        '''
+        The full path to the DVS file for this target.
         
+        '''
+    
+        return os.path.join(self.path, '%s.pdf' % self.ID)
+    
+    @property
+    def dvs_layout(self):
+        '''
+        The DVS layout guide.
+        
+        '''
+        
+        raise NotImplementedError('Must be defined via subclasses.')
+    
     # ------------------
     # Light curve stuff
     # ------------------
@@ -377,7 +401,7 @@ class Target(object):
         
         '''
         
-        return self.raw.flux - self.model
+        return self.raw.sap_flux(self.aperture) - self.model
 
     @property
     def model(self):
@@ -425,3 +449,11 @@ class Target(object):
         log.info('Initializing de-trending...')
         from . import pld
         pld.detrend(self, **kwargs)    
+    
+    def plot_dvs(self):
+        '''
+        Plots the raw and de-trended data in the data validation summary.
+        
+        '''
+        
+        raise NotImplementedError('Must be implemented via subclasses.')

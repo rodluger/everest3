@@ -17,3 +17,4 @@ def test_k2():
     
     star = everest3.k2.Target(205071984)
     star.detrend()
+    star.plot_dvs()
