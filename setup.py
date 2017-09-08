@@ -43,7 +43,7 @@ setup(name = 'everest3',
                           'matplotlib',
                           'six',
                           'kplr',
-                          'pyfits'
+                          'astropy'
                          ],
       include_package_data = True,
       zip_safe = False,
