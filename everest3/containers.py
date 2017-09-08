@@ -10,8 +10,8 @@ Defines classes to store information about targets and their light curves.
 
 from __future__ import division, print_function, absolute_import, \
                        unicode_literals
-from . import pld
 from .constants import *
+from .utils import InitializeLogging
 import numpy as np
 import logging
 log = logging.getLogger(__name__)
@@ -24,11 +24,19 @@ class TimeSeries(object):
     A data container for a generic photometric timeseries defined on a postage
     stamp.
     
+    :param array_like time: The time array.
+    :param array_like flux: The flux array, shape `(ncads, ncols, nrows)`.
+    :param array_like error: The flux errors array, shape \
+           `(ncads, ncols, nrows)`.
+    :param func scatter: The scatter metric, a function that accepts a \
+           :py:class:`TimeSeries` instance (plus arbitrary `args` and \
+           `kwargs`) and returns a :py:obj:`float`.
+    
     '''
     
     def __init__(self, time = np.empty((0,), dtype = 'float64'), 
                  flux = np.empty((0,0,0,), dtype = 'float64'), 
-                 error = None):
+                 error = None, scatter = None):
         '''
         
         '''
@@ -40,7 +48,11 @@ class TimeSeries(object):
             self.error = error
         else:
             self.error = np.zeros_like(self.flux)
-    
+        if scatter is None:
+            self._scatter = lambda self: np.nan
+        else:
+            self._scatter = scatter
+        
     def __repr__(self):
         '''
         
@@ -189,7 +201,15 @@ class TimeSeries(object):
         
         # Sum the errors in quadrature
         return np.sqrt(np.nansum(self.pixel_error(aperture) ** 2, axis = 0))      
-
+    
+    def scatter(self, *args, **kwargs):
+        '''
+        Returns the scatter metric for the light curve.
+    
+        '''
+    
+        return self._scatter(self, *args, **kwargs)
+    
 class Target(object):
     '''
     A class that stores all the information, data, attributes, etc. for a star
@@ -198,20 +218,24 @@ class Target(object):
     '''
     
     def __init__(self, ID, season = None, mag = None, 
-                 cadence = KEPLER_LONG_CADENCE, lightcurve = None):
+                 cadence = KEPLER_LONG_CADENCE, quiet = False):
         '''
         
         '''
         
+        # User params
         self.ID = ID
         self.season = season
         self.mag = mag
         self.cadence = cadence
-        if lightcurve is not None:
-            self.lightcurve = lightcurve
-        else:
-            self.lightcurve = TimeSeries()
-    
+        
+        # Initialize
+        InitializeLogging(self.logfile, quiet = quiet)
+        log.info('Initializing everest3...')
+        self.get_raw_data()
+        self.get_aperture()
+        self.model = np.zeros_like(self.time)
+        
     def __repr__(self):
         '''
         
@@ -285,49 +309,119 @@ class Target(object):
     @cadence.setter
     def cadence(self, value):
         self._cadence = value
-
+    
+    @property
+    def path(self):
+        '''
+        The full path to the directory where data is stored for this target.
+        
+        '''
+        
+        raise NotImplementedError('Must be defined via subclasses.')
+    
+    @property
+    def logfile(self):
+        '''
+        The full path to the log file for this target.
+        
+        '''
+    
+        return os.path.join(self.path, '%s.log' % self.ID)
+        
     # ------------------
     # Light curve stuff
     # ------------------
     
     @property
-    def lightcurve(self):
+    def raw(self):
         '''
-        A :py:class:`TimeSeries` object containing the dataset for this target.
+        A :py:class:`TimeSeries` object containing the raw light curve for 
+        this target.
         
         '''
         
-        return self._lightcurve
+        return self._raw
     
-    @lightcurve.setter
-    def lightcurve(self, value):
-        self._lightcurve = value
+    @raw.setter
+    def raw(self, value):
+        self._raw = value
+
+    @property
+    def aperture(self):
+        '''
+        A 2D :py:obj:`numpy` array of integers of shape `(ncols, nrows)`
+        with 1's corresponding  to pixels included in the aperture and 0's 
+        to pixels outside the aperture.
+        
+        '''
+        
+        return self._aperture
+    
+    @aperture.setter
+    def aperture(self, value):
+        self._aperture = value
+    
+    @property
+    def time(self):
+        '''
+        The time array,
+        
+        '''
+        
+        return self.raw.time
+    
+    @property
+    def flux(self):
+        '''
+        The de-trended flux array.
+        
+        '''
+        
+        return self.raw.flux - self.model
+
+    @property
+    def model(self):
+        '''
+        The linear de-trending model.
+        
+        '''
+        
+        return self._model
+    
+    @model.setter
+    def model(self, value):
+        self._model = value   
     
     # ------------------
     # Main functions
     # ------------------
     
-    def detrend(self, *args, **kwargs):
+    def get_raw_data(self):
+        '''
+        Downloads the raw data for this target. This routine should
+        assign a :py:class:`TimeSeries` instance to the :py:attr:`raw` 
+        attribute of this class.
+    
+        '''
+    
+        raise NotImplementedError('Must be implemented via subclasses.')
+    
+    def get_aperture(self):
+        '''
+        Computes the optimal aperture for this target. This routine should
+        assign a 2D :py:obj:`numpy` integer array to the :py:attr:`aperture` 
+        attribute of this class.
+        
+        '''
+        
+        raise NotImplementedError('Must be implemented via subclasses.')
+    
+    def detrend(self, **kwargs):
         '''
         De-trend the light curve via :py:func:`everest3.pld.detrend()`.
         
         '''
         
-        pld.detrend(self, *args, **kwargs)
-
-    def download(self):
-        '''
-        Downloads the raw data for this target.
-    
-        '''
-    
-        raise NotImplementedError('Must be implemented via subclasses.')
-        
-    def scatter(self):
-        '''
-        Computes the scatter metric for the light curve.
-    
-        '''
-    
-        raise NotImplementedError('Must be implemented via subclasses.')
-    
+        log.info('Initializing de-trending...')
+        from . import pld
+        pld.detrend(self, **kwargs)    

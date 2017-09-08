@@ -43,10 +43,29 @@ time_unit = 'BJD - 2454833'
 #: The magnitude string for the mission
 mag_str = 'Kp'
 
+class NoWarnings():
+    '''
+    A context manager to temporarily disable all logging
+    warnings. Useful for overriding :py:obj:`kplr` warnings.
+    
+    '''
+    
+    def __init__(self):
+        pass
+        
+    def __enter__(self):
+        logging.disable(logging.CRITICAL)
+        
+    def __exit__(self, type, value, traceback):
+        logging.disable(logging.NOTSET)
+
 class Target(containers.Target):
     '''
     A class that stores all the information, data, attributes, etc. for a `K2`
     target de-trended with :py:obj:`everest3`.
+    
+    :param bool clobber_raw: Overwrite existing raw light curve? \
+           Default :py:obj:`False`.
     
     '''
     
@@ -55,8 +74,12 @@ class Target(containers.Target):
         
         '''
         
-        super(Target, self).__init__(*args, **kwargs)
+        # User options
+        self.clobber_raw = kwargs.get('clobber_raw', False)
         
+        # Initialize parent class
+        super(Target, self).__init__(*args, **kwargs)
+
     @property
     def mission(self):
         '''
@@ -73,16 +96,36 @@ class Target(containers.Target):
         
         '''
         
+        # Do we need to figure out the campaign number for this target?
         if self._season is None:
-            raise NotImplementedError('TODO: Automatically figure out the campaign number here.')
-        else:
-            return self._season
+            with NoWarnings():
+                star = client.k2_star(self.ID)
+                tpfs = star.get_target_pixel_files(fetch = False)
+                self._season = tpfs[0].sci_campaign
+       
+        return self._season
     
     @season.setter
     def season(self, value):
         self._season = value
     
-    def download(self, clobber = False):
+    @property
+    def path(self):
+        '''
+        The full path to the directory where data is stored for this target.
+        
+        '''
+        
+        target_path = os.path.join(path, 'c%02d' % self.season, 
+                                  ('%09d' % self.ID)[:4] + '00000', 
+                                  ('%09d' % self.ID)[4:])
+        
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+        
+        return target_path
+    
+    def get_raw_data(self):
         '''
         Downloads the raw data for this target.
     
@@ -94,31 +137,27 @@ class Target(containers.Target):
                            % (self.ID, self.season))
         
         # Download the file if necessary
-        if (clobber) or (not os.path.exists(tpf)):
-        
-            # HACK: Temporarily disable logging to
-            # suppress `kplr` warning messages and
-            # download the target pixel files
-            
-            logging.disable(logging.CRITICAL)
-            star = client.k2_star(self.ID)
-            tpfs = star.get_target_pixel_files(fetch = True)
-            logging.disable(logging.NOTSET)
+        if (self.clobber_raw) or (not os.path.exists(tpf)):
+            log.info('Downloading raw data...')
+            with NoWarnings():
+                star = client.k2_star(self.ID)
+                tpfs = star.get_target_pixel_files(fetch = True)
         
         # Read the TPF
         with pyfits.open(tpf) as f:
             tpf_data = f[1].data
         
-        # Store the data in the light curve
+        # Store the data in the raw light curve container
         time = np.array(tpf_data.field('TIME'), dtype='float64')
         flux = np.array(tpf_data.field('FLUX'), dtype='float64')
         error = np.array(tpf_data.field('FLUX_ERR'), dtype='float64')
-        self.lightcurve = containers.TimeSeries(time, flux, error)
+        self.raw = containers.TimeSeries(time, flux, error)
         
-    def scatter(self):
+    def get_aperture(self):
         '''
-        Computes the scatter metric for the light curve.
+        Computes the optimal aperture for this target.
     
         '''
-    
-        raise NotImplementedError('Not yet implemented.')
+        
+        log.info('Computing the optimal aperture...')
+        self.aperture = np.ones((self.raw.ncols, self.raw.nrows))
