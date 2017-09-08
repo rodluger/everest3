@@ -42,7 +42,8 @@ setup(name = 'everest3',
                           'scipy',
                           'matplotlib',
                           'six',
-                          'kplr'
+                          'kplr',
+                          'astropy'
                          ],
       include_package_data = True,
       zip_safe = False,
