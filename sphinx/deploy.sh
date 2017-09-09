@@ -39,6 +39,7 @@ git add -f *.html
 git add -f *.js
 git add -f _sources
 git add -f _static
+git add -f _images
 
 # Commit and force push!
 git -c user.name='travis' -c user.email='travis' commit -m "rebuild gh-pages at ${rev}"
