@@ -116,7 +116,7 @@ class DVS(object):
             layout = default_layout
             
         # Convert to a 2D array
-        layout = np.array(np.matrix(layout)).reshape(-22,12)
+        layout = np.array(np.matrix(str(layout))).reshape(-22,12)
         
         # Create the cells
         self._cell = []
