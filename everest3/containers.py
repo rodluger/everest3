@@ -10,7 +10,9 @@ Defines classes to store information about targets and their light curves.
 
 from __future__ import division, print_function, absolute_import, \
                        unicode_literals
+from . import __version__
 from .constants import *
+from .dvs import DVS, default_layout
 from .utils import InitializeLogging
 import numpy as np
 import logging
@@ -247,7 +249,7 @@ class Target(object):
         
         '''
         
-        return "<%s Target: %s>" % (self.mission, self.ID)
+        return "<%s Target: %s>" % (self.mission.name, self.ID)
     
     # ------------------
     # Generic properties
@@ -256,7 +258,7 @@ class Target(object):
     @property
     def mission(self):
         '''
-        The mission name.
+        The mission module.
         
         '''
         
@@ -350,7 +352,7 @@ class Target(object):
         
         '''
         
-        raise NotImplementedError('Must be defined via subclasses.')
+        return default_layout
     
     # ------------------
     # Light curve stuff
@@ -456,4 +458,41 @@ class Target(object):
         
         '''
         
-        raise NotImplementedError('Must be implemented via subclasses.')
+        log.info('Plotting the data validation summary...')
+        dvs = DVS(layout = self.dvs_layout)
+        
+        # Header
+        dvs.header.annotate('%s %s' % (self.mission.ID_str, self.ID), 
+                            xy = (0.5, 0.5), 
+                            xycoords = 'axes fraction', fontsize = 16, 
+                            ha = 'center', va = 'center', fontweight = 'bold')
+        dvs.header.annotate('%s %.2f' % (self.mission.mag_str, self.mag), 
+                            xy = (0.95, 0.5), 
+                            xycoords = 'axes fraction', fontsize = 14, 
+                            ha = 'right', va = 'center')
+        
+        # Footer
+        dvs.footer.annotate('De-trended with everest v%s' % __version__, 
+                            xy = (0.5, 0.5), 
+                            xycoords = 'axes fraction', fontsize = 8, 
+                            fontstyle = 'italic',
+                            ha = 'center', va = 'center')
+        
+        # De-trended data
+        dvs.detrended.plot(self.time, self.flux, 'k.', alpha = 0.3, ms = 2)
+        dvs.detrended.set_xlabel('Time [%s]' % self.mission.time_unit, 
+                                 fontsize = 5)
+        dvs.detrended.set_ylabel('Detrended Flux [%s]' 
+                                 % self.mission.flux_unit, 
+                                 fontsize = 5)
+                                 
+        # Raw data
+        dvs.raw.plot(self.time, self.raw.sap_flux(self.aperture), 
+                     'k.', alpha = 0.3, ms = 2)
+        dvs.raw.set_xlabel('Time [%s]' % self.mission.time_unit, 
+                           fontsize = 5)
+        dvs.raw.set_ylabel('Raw Flux [%s]' % self.mission.flux_unit, 
+                           fontsize = 5)
+                                                     
+        # Save
+        dvs.fig.savefig(self.dvsfile)

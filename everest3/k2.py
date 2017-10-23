@@ -11,10 +11,9 @@ Routines for de-trending `K2` light curves with :py:obj:`everest3`.
 from __future__ import division, print_function, absolute_import, \
                        unicode_literals
 from . import containers
-from .dvs import DVS
 from .constants import *
-from . import __version__
 import os
+import sys
 import numpy as np
 import kplr
 client = kplr.API()
@@ -62,8 +61,14 @@ name = 'K2'
 #: The time unit for the mission
 time_unit = 'BJD - 2454833'
 
+#: The flux unit for the mission
+flux_unit = 'e-/s'
+
 #: The magnitude string for the mission
 mag_str = 'Kp'
+
+#: The catalog identifier for the mission
+ID_str = 'EPIC'
 
 class _NoWarnings():
     '''
@@ -105,11 +110,11 @@ class Target(containers.Target):
     @property
     def mission(self):
         '''
-        The mission name.
+        The mission module (this module, :py:mod:`k2`).
         
         '''
         
-        return 'K2'
+        return sys.modules[__name__]
     
     @property
     def season(self):
@@ -146,37 +151,7 @@ class Target(containers.Target):
             os.makedirs(target_path)
         
         return target_path
-    
-    @property
-    def dvs_layout(self):
-        '''
-        The layout for the K2 DVS pdf output files.
         
-        '''
-        
-        return ("  0  0  0  0  0  0  0  0  0  0  0  0"
-                "  1  1  1  1  1  1  1  1  2  2  2  2"
-                "  1  1  1  1  1  1  1  1  2  2  2  2"
-                "  1  1  1  1  1  1  1  1  2  2  2  2"
-                "  1  1  1  1  1  1  1  1  2  2  2  2"
-                "  3  3  3  3  3  3  3  3  2  2  2  2"
-                "  3  3  3  3  3  3  3  3  2  2  2  2"
-                "  3  3  3  3  3  3  3  3  2  2  2  2"
-                "  3  3  3  3  3  3  3  3  2  2  2  2"
-                "  4  4  4  4  4  4  4  4  5  5  5  5"
-                "  4  4  4  4  4  4  4  4  5  5  5  5"
-                "  4  4  4  4  4  4  4  4  5  5  5  5"
-                "  4  4  4  4  4  4  4  4  5  5  5  5"
-                "  6  6  6  6  6  6  6  6  7  7  7  7"
-                "  6  6  6  6  6  6  6  6  7  7  7  7"
-                "  6  6  6  6  6  6  6  6  7  7  7  7"
-                "  6  6  6  6  6  6  6  6  7  7  7  7"
-                "  8  8  8  8  8  8  8  8  9  9  9  9"
-                "  8  8  8  8  8  8  8  8  9  9  9  9"
-                "  8  8  8  8  8  8  8  8  9  9  9  9"
-                "  8  8  8  8  8  8  8  8  9  9  9  9"
-                " 10 10 10 10 10 10 10 10 10 10 10 10")
-    
     def get_raw_data(self):
         '''
         Downloads the raw data for this target.
@@ -199,6 +174,9 @@ class Target(containers.Target):
         with pyfits.open(tpf) as f:
             tpf_data = f[1].data
         
+        # Set the magnitude (TODO)
+        self.mag = np.nan
+        
         # Store the data in the raw light curve container
         time = np.array(tpf_data.field('TIME'), dtype='float64')
         flux = np.array(tpf_data.field('FLUX'), dtype='float64')
@@ -214,34 +192,3 @@ class Target(containers.Target):
         log.info('Computing the optimal aperture...')
         self.aperture = np.ones((self.raw.ncols, self.raw.nrows), 
                                 dtype = 'int32')
-    
-    def plot_dvs(self):
-        '''
-        Plots the raw and de-trended data in the data validation summary.
-        
-        '''
-        
-        log.info('Plotting the data validation summary...')
-        dvs = DVS(layout = self.dvs_layout)
-        
-        # Header
-        dvs.cell[0].axis('off')
-        dvs.cell[0].annotate('EPIC %d' % self.ID, xy = (0.5, 0.5), 
-                             xycoords = 'axes fraction', fontsize = 16, 
-                             ha = 'center', va = 'center', fontweight = 'bold')
-        
-        # Footer
-        dvs.cell[10].axis('off')
-        dvs.cell[10].annotate('De-trended with everest v%s' % __version__, 
-                              xy = (0.5, 0.), 
-                              xycoords = 'axes fraction', fontsize = 10, 
-                              ha = 'center', va = 'center')
-        
-        # De-trended data
-        dvs.cell[1].plot(self.time, self.flux, 'k.', alpha = 0.3, ms = 2)
-        
-        # Raw data
-        dvs.cell[3].plot(self.time, self.flux, 'k.', alpha = 0.3, ms = 2)
-        
-        # Save
-        dvs.fig.savefig(self.dvsfile)

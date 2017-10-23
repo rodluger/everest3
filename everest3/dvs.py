@@ -16,27 +16,27 @@ log = logging.getLogger(__name__)
 
 #: The default DVS page layout
 default_layout = (  "  0  0  0  0  0  0  0  0  0  0  0  0"
-                    "  1  1  1  1  1  1  1  1  2  2  2  2"
-                    "  1  1  1  1  1  1  1  1  2  2  2  2"
-                    "  1  1  1  1  1  1  1  1  2  2  2  2"
-                    "  1  1  1  1  1  1  1  1  2  2  2  2"
-                    "  3  3  3  3  3  3  3  3  2  2  2  2"
-                    "  3  3  3  3  3  3  3  3  2  2  2  2"
-                    "  3  3  3  3  3  3  3  3  2  2  2  2"
-                    "  3  3  3  3  3  3  3  3  2  2  2  2"
-                    "  4  4  4  4  4  4  4  4  5  5  5  5"
-                    "  4  4  4  4  4  4  4  4  5  5  5  5"
-                    "  4  4  4  4  4  4  4  4  5  5  5  5"
-                    "  4  4  4  4  4  4  4  4  5  5  5  5"
-                    "  6  6  6  6  6  6  6  6  7  7  7  7"
-                    "  6  6  6  6  6  6  6  6  7  7  7  7"
-                    "  6  6  6  6  6  6  6  6  7  7  7  7"
-                    "  6  6  6  6  6  6  6  6  7  7  7  7"
-                    "  8  8  8  8  8  8  8  8  9  9  9  9"
-                    "  8  8  8  8  8  8  8  8  9  9  9  9"
-                    "  8  8  8  8  8  8  8  8  9  9  9  9"
-                    "  8  8  8  8  8  8  8  8  9  9  9  9"
-                    " 10 10 10 10 10 10 10 10 10 10 10 10"  )
+                    "  1  1  1  1  1  1  1  1  6  6  7  7"
+                    "  1  1  1  1  1  1  1  1  6  6  7  7"
+                    "  1  1  1  1  1  1  1  1  6  6  7  7"
+                    "  1  1  1  1  1  1  1  1  6  6  7  7"
+                    "  2  2  2  2  2  2  2  2  8  8  9  9"
+                    "  2  2  2  2  2  2  2  2  8  8  9  9"
+                    "  2  2  2  2  2  2  2  2  8  8  9  9"
+                    "  2  2  2  2  2  2  2  2  8  8  9  9"
+                    "  3  3  3  3  3  3  3  3 10 10 10 10"
+                    "  3  3  3  3  3  3  3  3 10 10 10 10"
+                    "  3  3  3  3  3  3  3  3 11 11 11 11"
+                    "  3  3  3  3  3  3  3  3 11 11 11 11"
+                    "  4  4  4  4  4  4  4  4 12 12 12 12"
+                    "  4  4  4  4  4  4  4  4 12 12 12 12"
+                    "  4  4  4  4  4  4  4  4 13 13 13 13"
+                    "  4  4  4  4  4  4  4  4 13 13 13 13"
+                    "  5  5  5  5  5  5  5  5 14 14 14 14"
+                    "  5  5  5  5  5  5  5  5 14 14 14 14"
+                    "  5  5  5  5  5  5  5  5 15 15 15 15"
+                    "  5  5  5  5  5  5  5  5 15 15 15 15"
+                    " 16 16 16 16 16 16 16 16 16 16 16 16"  )
 
 class _Cell(object):
     '''
@@ -64,6 +64,8 @@ class _Cell(object):
         else:
             for tick in self.ax.get_xticklabels() + self.ax.get_yticklabels():
                 tick.set_fontsize(5)
+            self.ax.tick_params(direction = 'in')
+            
 class DVS(object):
     '''
     A data validation summary object. This contains a list of cells (axis
@@ -75,14 +77,23 @@ class DVS(object):
            that :py:obj:`layout` **must** have shape `(22, 12)` when converted\
            into a matrix. When specifying a new layout, please use the default\
            one as a template.
-    :param float margins: Margin sizes in inches.
+    :param float margin_left: Left margin sizes in inches.
+    :param float margin_right: Right margin sizes in inches.
+    :param float margin_top: Top margin sizes in inches.
+    :param float margin_bottom: bottom margin sizes in inches.
     :param bool labels: If :py:obj:`True`, adds labels to the cells in the \
            DVS for visualization. Default :py:obj:`False`.
     :param float hspace: Passed directly to :py:func:`fig.subplots_adjust()`. \
            Default :py:obj:`None`.
     :param float wspace: Passed directly to :py:func:`fig.subplots_adjust()`. \
            Default :py:obj:`None`.
-
+    :param int header: The cell index corresponding the header. Default `0`.
+    :param int footer: The cell index corresponding the footer. Default `-1`.
+    :param int detrended: The cell index corresponding the detrended light \
+           curve. Default `1`.
+    :param int raw: The cell index corresponding the raw light curve. \
+           Default `2`.
+           
     .. plot::
          :align: center
      
@@ -93,8 +104,10 @@ class DVS(object):
     
     '''
     
-    def __init__(self, layout = None, margins = 0.5, labels = False,
-                 hspace = 0.75, wspace = 0.75):
+    def __init__(self, layout = None, margin_left = 0.5, margin_right = 0.5,
+                 margin_top = 0.25, margin_bottom = 0.1, labels = False,
+                 hspace = 1.25, wspace = 1.25, header = 0, footer = -1,
+                 detrended = 1, raw = 2):
         '''
                 
         '''
@@ -103,10 +116,10 @@ class DVS(object):
         self._fig = pl.figure(figsize = (8.5, 11))
         
         # Set the margins
-        self._fig.subplots_adjust(left = margins / 8.5, 
-                                  top = 1 - margins / 11., 
-                                  bottom = margins / 11., 
-                                  right = 1 - margins / 8.5)
+        self._fig.subplots_adjust(left = margin_left / 8.5, 
+                                  top = 1 - margin_top / 11., 
+                                  bottom = margin_bottom / 11., 
+                                  right = 1 - margin_right / 8.5)
         
         # Set the spacing
         self._fig.subplots_adjust(hspace = hspace, wspace = wspace)
@@ -117,7 +130,7 @@ class DVS(object):
             
         # Convert to a 2D array
         layout = np.array(np.matrix(str(layout))).reshape(-22,12)
-        
+                
         # Create the cells
         self._cell = []
         for n in range(99):
@@ -137,7 +150,15 @@ class DVS(object):
             
             # Create the cell
             self._cell.append(_Cell(n, x, y, dx, dy, labels).ax)
-    
+        
+        # Special cell indices
+        self._header = header
+        self._footer = footer
+        self._raw = raw
+        self._detrended = detrended
+        self.header.axis('off')
+        self.footer.axis('off')
+        
     @property
     def fig(self):
         '''
@@ -156,3 +177,39 @@ class DVS(object):
         '''
         
         return self._cell
+    
+    @property
+    def header(self):
+        '''
+        The header cell.
+        
+        '''
+        
+        return self._cell[self._header]
+    
+    @property
+    def footer(self):
+        '''
+        The footer cell.
+        
+        '''
+        
+        return self._cell[self._footer]
+
+    @property
+    def raw(self):
+        '''
+        The raw light curve cell.
+        
+        '''
+        
+        return self._cell[self._raw]
+
+    @property
+    def detrended(self):
+        '''
+        The de-trended light curve cell.
+        
+        '''
+        
+        return self._cell[self._detrended]
