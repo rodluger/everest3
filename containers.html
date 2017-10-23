@@ -1,0 +1,471 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>containers.py &mdash; everest3 3.0.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="everest3 3.0.0 documentation" href="index.html"/>
+        <link rel="up" title="API" href="api.html"/>
+        <link rel="next" title="dvs.py" href="dvs.html"/>
+        <link rel="prev" title="constants.py" href="constants.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> everest3
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constants.html">constants.py</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">containers.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvs.html">dvs.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="k2.html">k2.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pld.html">pld.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils.py</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">everest3</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">everest3</a> &raquo;</li>
+      
+        <li><a href="api.html">API</a>&raquo;</li>
+      
+    
+      <li>containers.py</li>
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-everest3.containers"></span><div class="section" id="containers-py">
+<h1>containers.py<a class="headerlink" href="#containers-py" title="Permalink to this headline">¶</a></h1>
+<p>Defines classes to store information about targets and their light curves.</p>
+<dl class="class">
+<dt id="everest3.containers.TimeSeries">
+<em class="property">class </em><code class="descclassname">everest3.containers.</code><code class="descname">TimeSeries</code><span class="sig-paren">(</span><em>time=array([]</em>, <em>dtype=float64)</em>, <em>flux=array([]</em>, <em>shape=(0</em>, <em>0</em>, <em>0)</em>, <em>dtype=float64)</em>, <em>error=None</em>, <em>scatter=None</em><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.TimeSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A data container for a generic photometric timeseries defined on a postage
+stamp.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>time</strong> (<em>array_like</em>) – The time array.</li>
+<li><strong>flux</strong> (<em>array_like</em>) – The flux array, shape <cite>(ncads, ncols, nrows)</cite>.</li>
+<li><strong>error</strong> (<em>array_like</em>) – The flux errors array, shape            <cite>(ncads, ncols, nrows)</cite>.</li>
+<li><strong>scatter</strong> (<em>func</em>) – The scatter metric, a function that accepts a            <a class="reference internal" href="#everest3.containers.TimeSeries" title="everest3.containers.TimeSeries"><code class="xref py py-class docutils literal"><span class="pre">TimeSeries</span></code></a> instance (plus arbitrary <cite>args</cite> and            <cite>kwargs</cite>) and returns a <code class="xref py py-obj docutils literal"><span class="pre">float</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="everest3.containers.TimeSeries.error">
+<code class="descname">error</code><a class="headerlink" href="#everest3.containers.TimeSeries.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flux errors array shape <cite>(ncads, ncols, nrows)</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.TimeSeries.flux">
+<code class="descname">flux</code><a class="headerlink" href="#everest3.containers.TimeSeries.flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flux array, shape <cite>(ncads, ncols, nrows)</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.TimeSeries.ncads">
+<code class="descname">ncads</code><a class="headerlink" href="#everest3.containers.TimeSeries.ncads" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of columns in the postage stamp.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.TimeSeries.ncols">
+<code class="descname">ncols</code><a class="headerlink" href="#everest3.containers.TimeSeries.ncols" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of columns in the postage stamp.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.TimeSeries.nrows">
+<code class="descname">nrows</code><a class="headerlink" href="#everest3.containers.TimeSeries.nrows" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of rows in the postage stamp.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.TimeSeries.pixel_error">
+<code class="descname">pixel_error</code><span class="sig-paren">(</span><em>aperture=None</em><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.TimeSeries.pixel_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>The array of pixel flux errors within an aperture.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>aperture</strong> (<em>ndarray</em>) – A 2D <code class="xref py py-obj docutils literal"><span class="pre">numpy</span></code> array of integers of                dimensions <cite>(ncols, nrows)</cite> with 1’s corresponding  to pixels                included in the aperture and 0’s to pixels outside the aperture.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A 2D pixel flux errors array of shape <cite>(ncads, npix)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.TimeSeries.pixel_flux">
+<code class="descname">pixel_flux</code><span class="sig-paren">(</span><em>aperture=None</em><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.TimeSeries.pixel_flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>The array of pixel fluxes within an aperture.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>aperture</strong> (<em>ndarray</em>) – A 2D <code class="xref py py-obj docutils literal"><span class="pre">numpy</span></code> array of integers of                dimensions <cite>(ncols, nrows)</cite> with 1’s corresponding  to pixels                included in the aperture and 0’s to pixels outside the aperture.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A 2D pixel flux array of shape <cite>(ncads, npix)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.TimeSeries.sap_error">
+<code class="descname">sap_error</code><span class="sig-paren">(</span><em>aperture=None</em><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.TimeSeries.sap_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>The simple aperture photometry flux errors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>aperture</strong> (<em>ndarray</em>) – A 2D <code class="xref py py-obj docutils literal"><span class="pre">numpy</span></code> array of integers of                dimensions <cite>(ncols, nrows)</cite> with 1’s corresponding  to pixels                included in the aperture and 0’s to pixels outside the aperture.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A 1D SAP flux errors array of shape <cite>(ncads)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.TimeSeries.sap_flux">
+<code class="descname">sap_flux</code><span class="sig-paren">(</span><em>aperture=None</em><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.TimeSeries.sap_flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>The simple aperture photometry flux.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>aperture</strong> (<em>ndarray</em>) – A 2D <code class="xref py py-obj docutils literal"><span class="pre">numpy</span></code> array of integers of                dimensions <cite>(ncols, nrows)</cite> with 1’s corresponding  to pixels                included in the aperture and 0’s to pixels outside the aperture.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A 1D SAP flux array of shape <cite>(ncads)</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.TimeSeries.scatter">
+<code class="descname">scatter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.TimeSeries.scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the scatter metric for the light curve.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.TimeSeries.time">
+<code class="descname">time</code><a class="headerlink" href="#everest3.containers.TimeSeries.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="everest3.containers.Target">
+<em class="property">class </em><code class="descclassname">everest3.containers.</code><code class="descname">Target</code><span class="sig-paren">(</span><em>ID</em>, <em>season=None</em>, <em>mag=None</em>, <em>cadence=0.020833333333333332</em>, <em>quiet=False</em><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.Target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A class that stores all the information, data, attributes, etc. for a star
+de-trended with <code class="xref py py-obj docutils literal"><span class="pre">everest3</span></code>.</p>
+<dl class="attribute">
+<dt id="everest3.containers.Target.ID">
+<code class="descname">ID</code><a class="headerlink" href="#everest3.containers.Target.ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="xref py py-obj docutils literal"><span class="pre">str</span></code> or <code class="xref py py-obj docutils literal"><span class="pre">int</span></code> identifier for this target.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.aperture">
+<code class="descname">aperture</code><a class="headerlink" href="#everest3.containers.Target.aperture" title="Permalink to this definition">¶</a></dt>
+<dd><p>A 2D <code class="xref py py-obj docutils literal"><span class="pre">numpy</span></code> array of integers of shape <cite>(ncols, nrows)</cite>
+with 1’s corresponding  to pixels included in the aperture and 0’s 
+to pixels outside the aperture.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.cadence">
+<code class="descname">cadence</code><a class="headerlink" href="#everest3.containers.Target.cadence" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="xref py py-obj docutils literal"><span class="pre">float</span></code> corresponding to the observation cadence in seconds.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.Target.detrend">
+<code class="descname">detrend</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.Target.detrend" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-trend the light curve via <a class="reference internal" href="pld.html#everest3.pld.detrend" title="everest3.pld.detrend"><code class="xref py py-func docutils literal"><span class="pre">everest3.pld.detrend()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.dvs_layout">
+<code class="descname">dvs_layout</code><a class="headerlink" href="#everest3.containers.Target.dvs_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>The DVS layout guide.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.dvsfile">
+<code class="descname">dvsfile</code><a class="headerlink" href="#everest3.containers.Target.dvsfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>The full path to the DVS file for this target.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.flux">
+<code class="descname">flux</code><a class="headerlink" href="#everest3.containers.Target.flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>The de-trended flux array.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.Target.get_aperture">
+<code class="descname">get_aperture</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.Target.get_aperture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the optimal aperture for this target. This routine should
+assign a 2D <code class="xref py py-obj docutils literal"><span class="pre">numpy</span></code> integer array to the <a class="reference internal" href="#everest3.containers.Target.aperture" title="everest3.containers.Target.aperture"><code class="xref py py-attr docutils literal"><span class="pre">aperture</span></code></a> 
+attribute of this class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.Target.get_raw_data">
+<code class="descname">get_raw_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.Target.get_raw_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads the raw data for this target. This routine should
+assign a <a class="reference internal" href="#everest3.containers.TimeSeries" title="everest3.containers.TimeSeries"><code class="xref py py-class docutils literal"><span class="pre">TimeSeries</span></code></a> instance to the <a class="reference internal" href="#everest3.containers.Target.raw" title="everest3.containers.Target.raw"><code class="xref py py-attr docutils literal"><span class="pre">raw</span></code></a> 
+attribute of this class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.logfile">
+<code class="descname">logfile</code><a class="headerlink" href="#everest3.containers.Target.logfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>The full path to the log file for this target.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.mag">
+<code class="descname">mag</code><a class="headerlink" href="#everest3.containers.Target.mag" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <code class="xref py py-obj docutils literal"><span class="pre">float</span></code> corresponding to the magnitude of this target 
+in the mission band.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.mission">
+<code class="descname">mission</code><a class="headerlink" href="#everest3.containers.Target.mission" title="Permalink to this definition">¶</a></dt>
+<dd><p>The mission module.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.model">
+<code class="descname">model</code><a class="headerlink" href="#everest3.containers.Target.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>The linear de-trending model.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.path">
+<code class="descname">path</code><a class="headerlink" href="#everest3.containers.Target.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>The full path to the directory where data is stored for this target.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="everest3.containers.Target.plot_dvs">
+<code class="descname">plot_dvs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#everest3.containers.Target.plot_dvs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the raw and de-trended data in the data validation summary.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.raw">
+<code class="descname">raw</code><a class="headerlink" href="#everest3.containers.Target.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#everest3.containers.TimeSeries" title="everest3.containers.TimeSeries"><code class="xref py py-class docutils literal"><span class="pre">TimeSeries</span></code></a> object containing the raw light curve for 
+this target.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.season">
+<code class="descname">season</code><a class="headerlink" href="#everest3.containers.Target.season" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <code class="xref py py-obj docutils literal"><span class="pre">int</span></code> or <code class="xref py py-obj docutils literal"><span class="pre">float</span></code> season/quarter/campaign 
+identifier for this target.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="everest3.containers.Target.time">
+<code class="descname">time</code><a class="headerlink" href="#everest3.containers.Target.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time array,</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dvs.html" class="btn btn-neutral float-right" title="dvs.py" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="constants.html" class="btn btn-neutral" title="constants.py" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Rodrigo Luger.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
